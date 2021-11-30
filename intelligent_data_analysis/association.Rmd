@@ -1,0 +1,59 @@
+---
+title: "Association rules"
+author: "zhao hongqiang"
+date: "10/24/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r include=FALSE}
+library(arules)
+```
+## 1. Generate or read from file binary matrix of transactions 
+
+
+```{r cars}
+set.seed(101)
+orders <- data.frame(
+  transactionID = sample(1:500, 1000, replace=T),
+  item = paste("item", sample(1:6, 1000, replace=T),sep = "")
+)
+
+tab = table(orders$transactionID,orders$item)
+binarymat = ifelse(tab > 0,1,0)
+head(binarymat)
+```
+
+## 2. Form association rules by algorithm Apriori.
+
+```{r }
+myrules=arules::apriori(binarymat, 
+                        parameter = list(
+                          support = 0.1,  #setting support as 0.1
+                          confidence = 0.25, #confidence as 0.25
+                          minlen = 2)) #Minimum number of items
+```
+Here can see that there are some rules
+
+### 3. Сalculate support and confidence of each rules.
+
+```{r}
+inspect(myrules)
+
+
+```
+using inspect function show support and confidence of each rules.
+
+
+## 4. Сhoose the 5 most reliable association rules.
+
+```{r}
+ordered_myrules <- sort(myrules, by="lift")
+inspect(ordered_myrules[1:5])
+```
+Sorted by lift to show top 5
+
+
+
